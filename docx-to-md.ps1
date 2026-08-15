@@ -76,8 +76,9 @@ try {
     }
   }
 
-  # 그림을 넣을 곳
-  $imgDirName = "img-$baseName"
+  # 그림을 넣을 곳. 괄호·공백이 들어가면 마크다운 주소가 깨지므로 안전한 글자만 남김
+  $slug = (($baseName -replace '[^\w가-힣.-]', '-') -replace '-{2,}', '-').Trim('-')
+  $imgDirName = "img-$slug"
   $imgDir = Join-Path $root "assets\$imgDirName"
   $imgHref = "assets/$imgDirName/"
   $script:imgCount = 0
@@ -220,11 +221,10 @@ summary:
 "@
 
   # --- 4. 저장 ---
-  $safeName = ($baseName -replace '[\\/:*?"<>|]', '-')
-  $outPath = Join-Path $root "posts\$today-$safeName.md"
+  $outPath = Join-Path $root "posts\$today-$slug.md"
   $n = 2
   while (Test-Path $outPath) {
-    $outPath = Join-Path $root "posts\$today-$safeName-$n.md"
+    $outPath = Join-Path $root "posts\$today-$slug-$n.md"
     $n++
   }
   [IO.File]::WriteAllText($outPath, $front + $body.Trim() + "`n", (New-Object Text.UTF8Encoding $false))

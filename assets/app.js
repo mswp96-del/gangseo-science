@@ -29,8 +29,10 @@ function escapeHtml(s) {
 function inline(text) {
   const codes = [];
   let s = escapeHtml(text).replace(/`([^`]+)`/g, (m, c) => '@@CODE' + (codes.push(c) - 1) + '@@');
-  s = s.replace(/!\[([^\]]*)\]\(([^)\s]+)\)/g, '<img src="$2" alt="$1" loading="lazy">');
-  s = s.replace(/\[([^\]]+)\]\(([^)\s]+)\)/g, '<a href="$2">$1</a>');
+  // 주소 안에 괄호가 들어가는 경우(예: 파일이름(4))까지 받아 주려고 괄호 짝을 한 번 허용합니다.
+  const url = '((?:[^()\\s]|\\([^()\\s]*\\))+)';
+  s = s.replace(new RegExp('!\\[([^\\]]*)\\]\\(' + url + '\\)', 'g'), '<img src="$2" alt="$1" loading="lazy">');
+  s = s.replace(new RegExp('\\[([^\\]]+)\\]\\(' + url + '\\)', 'g'), '<a href="$2">$1</a>');
   s = s.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
   s = s.replace(/\*([^*]+)\*/g, '<em>$1</em>');
   s = s.replace(/~~([^~]+)~~/g, '<del>$1</del>');

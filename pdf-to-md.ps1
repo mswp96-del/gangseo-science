@@ -71,7 +71,10 @@ try {
   $pages = [int]$pdf.PageCount
   Say "$pages 쪽을 그림으로 바꾸는 중..."
 
-  $imgDirName = "pdf-$baseName"
+  # 폴더 이름에 괄호·공백이 들어가면 마크다운 주소가 깨지므로 안전한 글자만 남김
+  $slug = ($baseName -replace '[^\w가-힣.-]', '-') -replace '-{2,}', '-'
+  $slug = $slug.Trim('-')
+  $imgDirName = "pdf-$slug"
   $imgDir = Join-Path $root "assets\$imgDirName"
   if (-not (Test-Path $imgDir)) { New-Item -ItemType Directory -Path $imgDir -Force | Out-Null }
 
@@ -110,10 +113,9 @@ try {
 
   # --- 글 만들기 ---
   $today = Get-Date -Format 'yyyy-MM-dd'
-  $safe = ($baseName -replace '[\\/:*?"<>|]', '-')
-  $outMd = Join-Path $root "posts\$today-$safe.md"
+  $outMd = Join-Path $root "posts\$today-$slug.md"
   $n = 2
-  while (Test-Path $outMd) { $outMd = Join-Path $root "posts\$today-$safe-$n.md"; $n++ }
+  while (Test-Path $outMd) { $outMd = Join-Path $root "posts\$today-$slug-$n.md"; $n++ }
 
   $lines = @(
     '---'
