@@ -33,9 +33,8 @@
 
    `summary`를 비워 두면 첫 문단이 자동으로 쓰입니다.
 3. 그 아래에 본문을 마크다운으로 씁니다.
-4. `posts/index.json` 목록에 파일 이름을 추가합니다.
 
-`category`는 목록 상단의 분류 버튼으로 자동으로 만들어집니다.
+`posts/index.json`은 `update-index.ps1`이 자동으로 생성하므로 직접 편집하지 않습니다. 미리보기 서버는 요청마다, 올리기 스크립트는 실행 시점에 다시 만듭니다. `category`는 목록 상단의 분류 버튼으로 자동 생성됩니다.
 
 ## 사진 넣기
 
@@ -63,10 +62,11 @@ assets/style.css       디자인
 assets/app.js          마크다운 변환, 목록·본문 렌더링
 assets/school-mark.png 학교 교표 (헤더 마크 · 파비콘)
 assets/school-logo.png 학교 가로형 로고 (원본, 현재 미사용)
-posts/index.json       글 목록 (파일 이름)
+posts/index.json       글 목록 (자동 생성 — 직접 편집하지 말 것)
 posts/*.md             글 원본
 serve.ps1              로컬 미리보기 서버
 upload.ps1             올리기 스크립트 (bat이 호출)
+update-index.ps1       posts 폴더를 훑어 index.json 생성
 미리보기.bat           더블클릭용 미리보기
 블로그 올리기.bat      더블클릭용 배포
 새 글 쓰는 법.md       글 작성 안내

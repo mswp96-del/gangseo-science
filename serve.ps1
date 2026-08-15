@@ -19,6 +19,8 @@ $types = @{
   '.pdf'  = 'application/pdf'
 }
 
+$updateIndex = Join-Path $root 'update-index.ps1'
+
 $listener = New-Object System.Net.HttpListener
 $listener.Prefixes.Add("http://localhost:$Port/")
 $listener.Start()
@@ -31,6 +33,9 @@ try {
     $context = $listener.GetContext()
     $path = [Uri]::UnescapeDataString($context.Request.Url.AbsolutePath)
     if ($path -eq '/') { $path = '/index.html' }
+
+    # 글 목록을 요청할 때마다 posts 폴더를 다시 훑습니다.
+    if ($path -eq '/posts/index.json') { & $updateIndex | Out-Null }
 
     $full = Join-Path $root ($path.TrimStart('/') -replace '/', '\')
     $resolved = [System.IO.Path]::GetFullPath($full)

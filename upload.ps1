@@ -11,6 +11,10 @@ Write-Host '    강서중 과학수업 블로그 올리기' -ForegroundColor Cya
 Write-Host '  ================================================' -ForegroundColor DarkGray
 Write-Host ''
 
+$count = & (Join-Path $PSScriptRoot 'update-index.ps1')
+Write-Host "  글 $count 개를 목록에 반영했습니다." -ForegroundColor DarkGray
+Write-Host ''
+
 git add -A
 git diff --cached --quiet
 if ($LASTEXITCODE -eq 0) {
