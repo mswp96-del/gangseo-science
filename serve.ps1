@@ -1,4 +1,4 @@
-# 블로그 로컬 미리보기 서버
+﻿# 블로그 로컬 미리보기 서버
 # 사용법: PowerShell에서  .\serve.ps1   (종료는 Ctrl+C)
 
 param([int]$Port = 8080)
