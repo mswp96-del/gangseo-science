@@ -157,8 +157,8 @@ try {
     $styleVal = if ($style) { $style.Value } else { '' }
     $numId = $node.SelectSingleNode('w:pPr/w:numPr/w:numId/@w:val', $nsm)
 
-    # 문서의 첫 줄은 제목으로 빼 둠
-    if (-not $docTitle -and $md.Count -eq 0) {
+    # 문서의 첫 '글자' 줄을 제목으로 빼 둠. 그림뿐인 줄은 제목이 될 수 없음
+    if (-not $docTitle -and $md.Count -eq 0 -and $text -notmatch '^!\[') {
       $docTitle = ($text -replace '\*\*', '').Trim()
       continue
     }
@@ -178,13 +178,24 @@ try {
     }
 
     $counter = 0
-    # 문단 전체가 굵으면 원문의 강조 상자 → 인용 상자로
     if ($text -match '^\*\*(.+)\*\*$' -and $Matches[1] -notmatch '\*\*') {
-      $md.Add('> ' + $Matches[1])
+      $inner = $Matches[1].Trim()
+      # 워드에서 소제목을 제목 스타일 대신 굵은 글씨로만 표시한 경우가 많음.
+      # "1. 개요", "가. 센서 사용법" 처럼 번호가 붙은 짧은 줄은 소제목으로 본다.
+      if ($inner.Length -le 60 -and $inner -match '^(\d+\.|[가나다라마바사아자차카타파하]\.)\s*\S') {
+        $level = if ($inner -match '^\d+\.') { 2 } else { 3 }
+        $md.Add('')
+        $md.Add(('#' * $level) + ' ' + $inner)
+        $md.Add('')
+      } else {
+        # 그 밖의 굵은 문단은 원문의 강조 상자 → 인용 상자로
+        $md.Add('> ' + $inner)
+        $md.Add('')
+      }
     } else {
       $md.Add($text)
+      $md.Add('')
     }
-    $md.Add('')
   }
 
   # --- 3. 다듬기 ---
