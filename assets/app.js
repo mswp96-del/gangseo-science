@@ -102,7 +102,8 @@ function markdown(src) {
     if (/^\|.*\|\s*$/.test(line)) {
       const rows = collect((l) => /^\|.*\|\s*$/.test(l))
         .map((l) => l.trim().replace(/^\||\|$/g, '').split('|').map((c) => c.trim()));
-      const alignRow = rows[1] && rows[1].every((c) => /^:?-{2,}:?$/.test(c)) ? rows.splice(1, 1)[0] : null;
+      // 구분선은 --- 뿐 아니라 :-: :-- --: 같은 정렬 표시도 인식합니다.
+      const alignRow = rows[1] && rows[1].every((c) => /^:?-+:?$/.test(c)) ? rows.splice(1, 1)[0] : null;
       const cell = (tag, cells) => `<tr>${cells.map((c, n) => {
         const a = alignRow && alignRow[n];
         const style = a && a.endsWith(':') ? (a.startsWith(':') ? ' style="text-align:center"' : ' style="text-align:right"') : '';
