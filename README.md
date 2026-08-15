@@ -67,8 +67,10 @@ posts/*.md             글 원본
 serve.ps1              로컬 미리보기 서버
 upload.ps1             올리기 스크립트 (bat이 호출)
 update-index.ps1       posts 폴더를 훑어 index.json 생성
+docx-to-md.ps1         워드(.docx) → 마크다운 변환기
 미리보기.bat           더블클릭용 미리보기
 블로그 올리기.bat      더블클릭용 배포
+워드 변환.bat          워드 파일을 끌어다 놓으면 글로 변환
 새 글 쓰는 법.md       글 작성 안내
 ```
 
