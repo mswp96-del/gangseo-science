@@ -2,17 +2,19 @@
 
 설치할 프로그램 없이 동작하는 정적 블로그입니다. 글은 마크다운 파일로 쓰고, 폴더를 그대로 웹 호스팅에 올리면 됩니다.
 
+**글 쓰는 방법은 [새 글 쓰는 법.md](새%20글%20쓰는%20법.md)를 보세요.** 아래는 기술적인 요약입니다.
+
+배포 주소: https://mswp96-del.github.io/gangseo-science/
+
 ## 미리보기
 
-PowerShell에서 블로그 폴더를 연 뒤 실행합니다.
-
-```bash
-powershell -ExecutionPolicy Bypass -File serve.ps1
-```
-
-브라우저에서 http://localhost:8080 으로 접속합니다. 종료는 Ctrl+C.
+`미리보기.bat`을 더블클릭하면 http://localhost:8321 에서 열립니다. 종료는 창 닫기.
 
 > `index.html`을 더블클릭해서 여는 방식은 동작하지 않습니다. 브라우저가 보안상 로컬 파일 읽기를 막기 때문에, 위 서버로 열어야 합니다.
+
+## 올리기
+
+`블로그 올리기.bat`을 더블클릭하면 `git add` → `commit` → `push`가 한 번에 실행되고, GitHub Pages가 1분 안에 사이트를 갱신합니다.
 
 ## 글 쓰는 법
 
@@ -64,7 +66,13 @@ assets/school-logo.png 학교 가로형 로고 (원본, 현재 미사용)
 posts/index.json       글 목록 (파일 이름)
 posts/*.md             글 원본
 serve.ps1              로컬 미리보기 서버
+upload.ps1             올리기 스크립트 (bat이 호출)
+미리보기.bat           더블클릭용 미리보기
+블로그 올리기.bat      더블클릭용 배포
+새 글 쓰는 법.md       글 작성 안내
 ```
+
+> `serve.ps1`과 `upload.ps1`은 **UTF-8 BOM**으로 저장해야 합니다. Windows PowerShell 5.1은 BOM이 없으면 한글을 깨뜨려 스크립트가 실행되지 않습니다. 편집 후 한글이 깨지면 이 점을 확인하세요.
 
 ## 학교 마크
 
