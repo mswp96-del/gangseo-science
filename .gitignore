@@ -1,0 +1,8 @@
+# 로컬 도구 설정
+.claude/
+
+# Windows / OneDrive
+Thumbs.db
+desktop.ini
+*.tmp
+~$*
