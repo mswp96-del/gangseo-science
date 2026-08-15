@@ -1,5 +1,9 @@
 const POSTS_DIR = 'posts/';
 
+// 글을 새로 올렸을 때 방문자에게 옛 목록이 보이지 않도록,
+// 서버에 바뀐 게 있는지 항상 확인하고 받아 옵니다. (바뀐 게 없으면 캐시를 그대로 씁니다)
+const fetchFresh = (url) => fetch(url, { cache: 'no-cache' });
+
 /* ---------- 테마 ---------- */
 
 (function initTheme() {
@@ -134,12 +138,12 @@ function parsePost(raw, file) {
 }
 
 async function loadPosts() {
-  const files = await fetch(`${POSTS_DIR}index.json`).then((r) => {
+  const files = await fetchFresh(`${POSTS_DIR}index.json`).then((r) => {
     if (!r.ok) throw new Error(`posts/index.json (${r.status})`);
     return r.json();
   });
   const posts = await Promise.all(files.map(async (file) => {
-    const raw = await fetch(POSTS_DIR + file).then((r) => {
+    const raw = await fetchFresh(POSTS_DIR + file).then((r) => {
       if (!r.ok) throw new Error(`${file} (${r.status})`);
       return r.text();
     });
@@ -234,7 +238,7 @@ async function renderPost() {
   }
 
   try {
-    const raw = await fetch(POSTS_DIR + file).then((r) => {
+    const raw = await fetchFresh(POSTS_DIR + file).then((r) => {
       if (!r.ok) throw new Error(`${file} (${r.status})`);
       return r.text();
     });
