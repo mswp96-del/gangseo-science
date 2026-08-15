@@ -34,8 +34,10 @@ try {
     $path = [Uri]::UnescapeDataString($context.Request.Url.AbsolutePath)
     if ($path -eq '/') { $path = '/index.html' }
 
-    # 글 목록을 요청할 때마다 posts 폴더를 다시 훑습니다.
-    if ($path -eq '/posts/index.json') { & $updateIndex | Out-Null }
+    # 글 목록을 요청할 때마다 해당 폴더를 다시 훑습니다. (posts, 일기, 비공개 모두)
+    if ($path -match '^/([^/]+)/index\.json$') {
+      & $updateIndex -Folder $Matches[1] | Out-Null
+    }
 
     $full = Join-Path $root ($path.TrimStart('/') -replace '/', '\')
     $resolved = [System.IO.Path]::GetFullPath($full)

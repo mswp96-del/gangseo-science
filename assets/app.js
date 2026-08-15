@@ -1,4 +1,5 @@
-const POSTS_DIR = 'posts/';
+// 글이 들어 있는 폴더. 비공개 페이지는 이 값을 다른 폴더로 바꿔서 씁니다.
+let POSTS_DIR = window.BLOG_DIR || 'posts/';
 
 // 글을 새로 올렸을 때 방문자에게 옛 목록이 보이지 않도록,
 // 서버에 바뀐 게 있는지 항상 확인하고 받아 옵니다. (바뀐 게 없으면 캐시를 그대로 씁니다)
@@ -174,7 +175,8 @@ function fail(container, err) {
 /* ---------- 목록 페이지 ---------- */
 
 async function renderIndex() {
-  document.querySelector('.year').textContent = new Date().getFullYear();
+  const yearEl = document.querySelector('.year');
+  if (yearEl) yearEl.textContent = new Date().getFullYear();
   const list = document.querySelector('.post-list');
   const search = document.querySelector('.search');
   const catBox = document.querySelector('.categories');
@@ -207,9 +209,12 @@ async function renderIndex() {
       return;
     }
 
+    // 비공개 페이지에서는 글 주소에도 폴더를 붙여, 본문도 같은 폴더에서 읽게 합니다.
+    const dirParam = window.BLOG_DIR ? `&dir=${encodeURIComponent(window.BLOG_DIR)}` : '';
+
     list.innerHTML = shown.map((p) => `
       <article class="card">
-        <a class="card-link" href="post.html?p=${encodeURIComponent(p.file)}">
+        <a class="card-link" href="post.html?p=${encodeURIComponent(p.file)}${dirParam}">
           <div class="card-meta">
             ${p.category ? `<span class="tag cat">${escapeHtml(p.category)}</span>` : ''}
             <time>${formatDate(p.date)}</time>
@@ -236,9 +241,14 @@ async function renderIndex() {
 /* ---------- 본문 페이지 ---------- */
 
 async function renderPost() {
-  document.querySelector('.year').textContent = new Date().getFullYear();
+  const yearEl = document.querySelector('.year');
+  if (yearEl) yearEl.textContent = new Date().getFullYear();
   const article = document.querySelector('.post');
-  const file = new URLSearchParams(location.search).get('p');
+  const params = new URLSearchParams(location.search);
+  const file = params.get('p');
+
+  // 비공개 글이면 그 폴더에서 읽습니다.
+  if (params.get('dir')) POSTS_DIR = params.get('dir');
 
   if (!file) {
     article.innerHTML = '<p class="state">주소에 글 정보가 없습니다.</p>';
