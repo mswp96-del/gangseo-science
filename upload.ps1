@@ -13,6 +13,23 @@ Write-Host ''
 
 $count = & (Join-Path $PSScriptRoot 'update-index.ps1')
 Write-Host "  글 $count 개를 목록에 반영했습니다." -ForegroundColor DarkGray
+
+# 디자인·기능 파일이 바뀌면 주소 뒤 번호를 갈아 끼웁니다.
+# 이걸 안 하면 이미 블로그를 본 적 있는 사람의 브라우저가 옛 파일을 계속 씁니다.
+$stamp = -join (@('assets\app.js', 'assets\style.css') | ForEach-Object {
+  (Get-FileHash (Join-Path $PSScriptRoot $_) -Algorithm MD5).Hash.Substring(0, 4)
+}).ToLower()
+
+foreach ($page in @('index.html', 'post.html')) {
+  $path = Join-Path $PSScriptRoot $page
+  $text = [IO.File]::ReadAllText($path, [Text.Encoding]::UTF8)
+  $new = [regex]::Replace($text, 'assets/(app\.js|style\.css)(\?v=[0-9a-f]+)?', "assets/`$1?v=$stamp")
+  if ($new -ne $text) {
+    [IO.File]::WriteAllText($path, $new, (New-Object Text.UTF8Encoding $false))
+    Write-Host "  $page 의 파일 번호를 갱신했습니다." -ForegroundColor DarkGray
+  }
+}
+
 Write-Host ''
 
 git add -A
