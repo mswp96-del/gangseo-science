@@ -78,15 +78,23 @@ function markdown(src) {
       continue;
     }
 
+    // 목록 항목 아래에 들여쓴 줄은 그 항목에 이어 붙입니다. (번호가 끊기지 않도록)
+    const listItems = (marker) => collect((l) => marker.test(l) || /^\s{2,}\S/.test(l))
+      .reduce((items, l) => {
+        if (marker.test(l)) items.push(l.replace(marker, ''));
+        else if (items.length) items[items.length - 1] += '\n' + l.trim();
+        return items;
+      }, [])
+      .map((t) => `<li>${inline(t)}</li>`)
+      .join('');
+
     if (/^\s*[-*+]\s+/.test(line)) {
-      const items = collect((l) => /^\s*[-*+]\s+/.test(l)).map((l) => `<li>${inline(l.replace(/^\s*[-*+]\s+/, ''))}</li>`);
-      out.push(`<ul>${items.join('')}</ul>`);
+      out.push(`<ul>${listItems(/^\s*[-*+]\s+/)}</ul>`);
       continue;
     }
 
     if (/^\s*\d+[.)]\s+/.test(line)) {
-      const items = collect((l) => /^\s*\d+[.)]\s+/.test(l)).map((l) => `<li>${inline(l.replace(/^\s*\d+[.)]\s+/, ''))}</li>`);
-      out.push(`<ol>${items.join('')}</ol>`);
+      out.push(`<ol>${listItems(/^\s*\d+[.)]\s+/)}</ol>`);
       continue;
     }
 
