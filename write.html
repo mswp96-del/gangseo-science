@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>글쓰기 · 강서중 과학수업</title>
+<meta name="robots" content="noindex, nofollow">
+<link rel="icon" href="assets/school-mark.png">
+<link rel="stylesheet" href="assets/style.css">
+<link rel="stylesheet" href="assets/write.css">
+</head>
+<body class="write-page">
+
+<header class="site-header">
+  <div class="wrap header-inner">
+    <a class="brand" href="index.html">
+      <img class="brand-mark" src="assets/school-mark.png" alt="강서중학교 교표">
+      <span class="brand-text">
+        <strong>글쓰기</strong>
+        <small>강서중 과학수업</small>
+      </span>
+    </a>
+    <div class="header-tools">
+      <span class="mode-badge" title="지금 어디에 저장되는지">확인 중…</span>
+      <button class="theme-toggle" type="button" aria-label="다크 모드 전환">🌙</button>
+    </div>
+  </div>
+</header>
+
+<main class="wrap write-wrap">
+
+  <div class="write-tabs" role="tablist">
+    <button type="button" class="tab active" data-tab="edit">✏️ 글쓰기</button>
+    <button type="button" class="tab" data-tab="list">📚 올린 글 (<span class="post-count">0</span>)</button>
+  </div>
+
+  <!-- 글쓰기 -->
+  <section class="panel panel-edit">
+
+    <div class="draft-line">
+      <span class="editing-label">새 글</span>
+      <span class="draft-state"></span>
+      <button type="button" class="mini new-post">새 글 시작</button>
+    </div>
+
+    <div class="field">
+      <label for="f-title">제목</label>
+      <input id="f-title" type="text" placeholder="예) 빛의 굴절 실험" autocomplete="off">
+    </div>
+
+    <div class="field-row">
+      <div class="field">
+        <label for="f-date">날짜</label>
+        <input id="f-date" type="date">
+      </div>
+      <div class="field">
+        <label for="f-category">분류</label>
+        <input id="f-category" type="text" list="category-list" placeholder="수업자료" autocomplete="off">
+        <datalist id="category-list"></datalist>
+      </div>
+    </div>
+
+    <div class="field">
+      <label for="f-tags">태그 <small>쉼표로 구분</small></label>
+      <input id="f-tags" type="text" placeholder="과학, 실험" autocomplete="off">
+    </div>
+
+    <div class="field">
+      <label for="f-summary">한 줄 요약 <small>비워 두면 첫 문단이 쓰입니다</small></label>
+      <input id="f-summary" type="text" placeholder="목록에 보일 설명" autocomplete="off">
+    </div>
+
+    <div class="field">
+      <label for="f-body">본문</label>
+      <div class="editor-toolbar">
+        <button type="button" class="mini" data-md="h">소제목</button>
+        <button type="button" class="mini" data-md="b">굵게</button>
+        <button type="button" class="mini" data-md="ul">목록</button>
+        <button type="button" class="mini" data-md="ol">번호</button>
+        <button type="button" class="mini" data-md="quote">인용</button>
+        <button type="button" class="mini" data-md="table">표</button>
+        <span class="toolbar-gap"></span>
+        <button type="button" class="mini accent add-photo">🖼 사진 넣기</button>
+        <button type="button" class="mini accent add-video">🎬 영상 넣기</button>
+      </div>
+      <textarea id="f-body" rows="18" placeholder="여기에 본문을 씁니다.&#10;&#10;사진은 [사진 넣기] 버튼을 누르거나, 사진 파일을 이 칸에 끌어다 놓으세요.&#10;영상은 [영상 넣기] 버튼에 유튜브 주소를 붙여넣으면 됩니다."></textarea>
+      <div class="drop-hint">사진·영상 파일을 여기에 끌어다 놓아도 됩니다</div>
+    </div>
+
+    <div class="upload-list"></div>
+
+    <div class="actions">
+      <button type="button" class="btn primary publish">인터넷에 올리기</button>
+      <button type="button" class="btn save-only">저장만 하기</button>
+      <button type="button" class="btn ghost preview-toggle">미리보기</button>
+    </div>
+
+    <p class="hint publish-hint"></p>
+
+    <section class="preview" hidden>
+      <h2 class="preview-title">미리보기</h2>
+      <article class="post">
+        <div class="post-body preview-body"></div>
+      </article>
+    </section>
+  </section>
+
+  <!-- 올린 글 -->
+  <section class="panel panel-list" hidden>
+    <p class="list-state">불러오는 중…</p>
+    <div class="post-manage"></div>
+  </section>
+
+</main>
+
+<footer class="site-footer">
+  <div class="wrap">© <span class="year"></span> 강서중 과학수업 · <a href="index.html">블로그 보기</a></div>
+</footer>
+
+<!-- 토큰 입력 (휴대폰·인터넷 모드에서만 뜹니다) -->
+<div class="modal token-modal" hidden>
+  <div class="modal-box">
+    <h2>인터넷에서 글을 올리려면</h2>
+    <p>이 기기에서 블로그에 글을 저장하려면 GitHub 접근 열쇠(토큰)가 한 번 필요합니다.
+      열쇠는 <strong>이 기기 안에만</strong> 저장되고 다른 곳으로 보내지 않습니다.</p>
+    <ol class="token-steps">
+      <li><a href="https://github.com/settings/tokens?type=beta" target="_blank" rel="noopener">github.com/settings/tokens</a> → <b>Generate new token</b></li>
+      <li>Repository access → <b>Only select repositories</b> → <code class="repo-name">gangseo-science</code></li>
+      <li>Permissions → Repository permissions → <b>Contents: Read and write</b></li>
+      <li>만들어진 <code>github_pat_…</code> 를 아래에 붙여넣기</li>
+    </ol>
+    <input class="token-input" type="password" placeholder="github_pat_… 또는 ghp_…" autocomplete="off">
+    <div class="modal-actions">
+      <button type="button" class="btn primary token-save">저장</button>
+      <button type="button" class="btn ghost token-cancel">닫기</button>
+      <button type="button" class="btn ghost token-forget">열쇠 지우기</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" hidden></div>
+
+<script src="assets/app.js"></script>
+<script src="assets/write.js"></script>
+</body>
+</html>

@@ -375,3 +375,28 @@ a { color: inherit; }
   .brand-text small { display: none; }
   .post-head h1 { font-size: 1.5rem; }
 }
+
+/* 영상 */
+
+.post-body .video {
+  margin: 1.4rem 0;
+  border-radius: 12px;
+  overflow: hidden;
+  background: #000;
+  box-shadow: var(--shadow);
+}
+
+.post-body .video iframe,
+.post-body .video video {
+  display: block;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  border: 0;
+}
+
+.post-body .video.is-file video {
+  height: auto;
+  aspect-ratio: auto;
+  max-height: 70vh;
+  background: #000;
+}

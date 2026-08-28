@@ -6,6 +6,12 @@
 
 배포 주소: https://mswp96-del.github.io/gangseo-science/
 
+## 글쓰기 앱
+
+`글쓰기.bat`을 더블클릭하면 http://localhost:8322/ 에 글쓰기 화면이 열립니다.
+제목·분류·본문 입력, 사진 여러 장 업로드, 영상 삽입, 미리보기, 기존 글 수정·삭제, `git push`까지 이 화면에서 합니다.
+같은 화면(`write.html`)을 GitHub Pages 주소로 열면 휴대폰에서도 쓸 수 있고, 이때는 GitHub 토큰(브라우저 localStorage 보관)으로 Contents API에 직접 씁니다.
+
 ## 미리보기
 
 `미리보기.bat`을 더블클릭하면 http://localhost:8321 에서 열립니다. 종료는 창 닫기.
@@ -36,6 +42,11 @@
 
 `posts/index.json`은 `update-index.ps1`이 자동으로 생성하므로 직접 편집하지 않습니다. 미리보기 서버는 요청마다, 올리기 스크립트는 실행 시점에 다시 만듭니다. `category`는 목록 상단의 분류 버튼으로 자동 생성됩니다.
 
+## 영상 넣기
+
+본문에 영상 주소만 한 줄 적으면 `assets/app.js`의 `videoEmbed()`가 재생기로 바꿉니다.
+유튜브(`youtu.be`, `watch?v=`, `shorts`, `live`), 비메오, 구글 드라이브(`/file/d/…`) 주소와 `.mp4/.webm/.mov/.m4v` 파일을 지원합니다.
+
 ## 사진 넣기
 
 `assets` 폴더에 이미지를 넣고 본문에서 이렇게 씁니다.
@@ -65,6 +76,11 @@ assets/school-logo.png 학교 가로형 로고 (원본, 현재 미사용)
 posts/index.json       글 목록 (자동 생성 — 직접 편집하지 말 것)
 posts/*.md             글 원본
 serve.ps1              로컬 미리보기 서버
+write.html             글쓰기 화면
+assets/write.js        글쓰기 앱 (내 컴퓨터 모드 · GitHub 모드 공용)
+assets/write.css       글쓰기 화면 디자인
+write-server.ps1       글쓰기 앱 서버 (정적 서빙 + save/delete/upload/publish API)
+글쓰기.bat             더블클릭용 글쓰기 앱
 upload.ps1             올리기 스크립트 (bat이 호출)
 update-index.ps1       posts 폴더를 훑어 index.json 생성
 docx-to-md.ps1         워드(.docx) → 마크다운 변환기
@@ -76,7 +92,7 @@ PDF 변환.bat           PDF를 끌어다 놓으면 슬라이드 글로 변환
 새 글 쓰는 법.md       글 작성 안내
 ```
 
-> `serve.ps1`과 `upload.ps1`은 **UTF-8 BOM**으로 저장해야 합니다. Windows PowerShell 5.1은 BOM이 없으면 한글을 깨뜨려 스크립트가 실행되지 않습니다. 편집 후 한글이 깨지면 이 점을 확인하세요.
+> `serve.ps1`·`upload.ps1`·`write-server.ps1`은 **UTF-8 BOM**으로 저장해야 합니다. Windows PowerShell 5.1은 BOM이 없으면 한글을 깨뜨려 스크립트가 실행되지 않습니다. 편집 후 한글이 깨지면 이 점을 확인하세요.
 
 ## 학교 마크
 

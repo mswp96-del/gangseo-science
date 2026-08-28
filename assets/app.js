@@ -40,6 +40,36 @@ function inline(text) {
   return s.replace(/@@CODE(\d+)@@/g, (m, i) => '<code>' + codes[i] + '</code>');
 }
 
+/* 영상 넣기
+   본문에 아래처럼 한 줄만 있으면 재생기로 바뀝니다.
+     https://youtu.be/XXXXXXXX          (유튜브 주소 그대로)
+     https://drive.google.com/file/d/...  (구글 드라이브 공유 링크)
+     assets/영상.mp4                     (블로그 폴더에 넣은 영상 파일)
+   앞에 ::video 를 붙여도 됩니다. */
+function videoEmbed(line) {
+  const raw = line.trim().replace(/^::video\s+/, '').replace(/^<(.+)>$/, '$1');
+  if (/\s/.test(raw) || !raw) return '';
+
+  const frame = (src, title) =>
+    `<div class="video"><iframe src="${escapeHtml(src)}" title="${title}" loading="lazy" allowfullscreen
+      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"></iframe></div>`;
+
+  let m = raw.match(/^https?:\/\/(?:www\.)?(?:youtube\.com\/(?:watch\?(?:.*&)?v=|embed\/|shorts\/|live\/)|youtu\.be\/)([\w-]{6,})/);
+  if (m) return frame(`https://www.youtube.com/embed/${m[1]}?rel=0`, '유튜브 영상');
+
+  m = raw.match(/^https?:\/\/(?:www\.)?vimeo\.com\/(\d+)/);
+  if (m) return frame(`https://player.vimeo.com/video/${m[1]}`, '비메오 영상');
+
+  m = raw.match(/^https?:\/\/drive\.google\.com\/file\/d\/([\w-]+)/);
+  if (m) return frame(`https://drive.google.com/file/d/${m[1]}/preview`, '구글 드라이브 영상');
+
+  if (/\.(mp4|webm|ogv|mov|m4v)(\?.*)?$/i.test(raw) && !/^https?:\/\/[^/]*youtube/.test(raw)) {
+    return `<div class="video is-file"><video src="${escapeHtml(raw)}" controls preload="metadata" playsinline></video></div>`;
+  }
+
+  return '';
+}
+
 function markdown(src) {
   const lines = src.replace(/\r\n/g, '\n').split('\n');
   const out = [];
@@ -74,6 +104,9 @@ function markdown(src) {
     }
 
     if (/^(-{3,}|\*{3,})\s*$/.test(line)) { out.push('<hr>'); i++; continue; }
+
+    const video = videoEmbed(line);
+    if (video) { out.push(video); i++; continue; }
 
     if (/^>\s?/.test(line)) {
       const body = collect((l) => /^>\s?/.test(l)).map((l) => l.replace(/^>\s?/, ''));
@@ -116,7 +149,7 @@ function markdown(src) {
       continue;
     }
 
-    const para = collect((l) => l.trim() && !/^(```|#{1,6}\s|>|\||\s*[-*+]\s|\s*\d+[.)]\s|-{3,}\s*$)/.test(l));
+    const para = collect((l) => l.trim() && !/^(```|#{1,6}\s|>|\||\s*[-*+]\s|\s*\d+[.)]\s|-{3,}\s*$)/.test(l) && !videoEmbed(l));
     out.push(`<p>${inline(para.join('\n'))}</p>`);
   }
 
