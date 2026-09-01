@@ -401,10 +401,50 @@
     input.click();
   }
 
+  // 링크 넣기 — 아티팩트 공유 링크, 홈페이지 주소 등
+  function linkRow() {
+    const old = $('.link-row');
+    if (old) { old.remove(); return; }
+    const vr = $('.video-row');
+    if (vr) vr.remove();
+
+    const ta = el.body;
+    const selected = ta.value.slice(ta.selectionStart, ta.selectionEnd).trim();
+    const row = document.createElement('div');
+    row.className = 'link-row editor-toolbar';
+    const inputStyle = 'padding:.35rem .6rem;border:1px solid var(--border);border-radius:7px;background:var(--bg);color:var(--text);font:inherit;font-size:.85rem';
+    row.innerHTML = `
+      <input class="link-url" type="url" placeholder="주소를 붙여넣으세요 (예: https://claude.ai/public/artifacts/…)" style="flex:2;min-width:12rem;${inputStyle}">
+      <input class="link-text" type="text" placeholder="보일 글자 (예: 시뮬레이션 열어 보기)" style="flex:1;min-width:9rem;${inputStyle}">
+      <button type="button" class="mini accent link-insert">넣기</button>`;
+    $('.editor-toolbar').after(row);
+    const urlInput = row.querySelector('.link-url');
+    const textInput = row.querySelector('.link-text');
+    if (selected) textInput.value = selected;
+    urlInput.focus();
+
+    const insert = () => {
+      let url = urlInput.value.trim();
+      if (!url) { toast('주소를 붙여넣어 주세요.', true); return; }
+      if (!/^https?:\/\//i.test(url)) url = 'https://' + url;
+      const label = textInput.value.trim() || (/claude\.ai\/public\/artifacts/.test(url) ? '아티팩트 열어 보기' : url.replace(/^https?:\/\//, ''));
+      // 마크다운 링크 문법이 깨지지 않도록 괄호·대괄호는 바꿔 둡니다.
+      const safeLabel = label.replace(/\[/g, '［').replace(/\]/g, '］');
+      const safeUrl = url.replace(/\(/g, '%28').replace(/\)/g, '%29');
+      insertAtCursor(`[${safeLabel}](${safeUrl})`);
+      row.remove();
+      toast('링크를 넣었습니다. 미리보기로 확인해 보세요.');
+    };
+    row.querySelector('.link-insert').addEventListener('click', insert);
+    [urlInput, textInput].forEach((i) => i.addEventListener('keydown', (e) => { if (e.key === 'Enter') { e.preventDefault(); insert(); } }));
+  }
+
   // 영상 넣기 — 주소 붙여넣기 또는 파일 고르기
   function videoRow() {
     const old = $('.video-row');
     if (old) { old.remove(); return; }
+    const lr = $('.link-row');
+    if (lr) lr.remove();
 
     const row = document.createElement('div');
     row.className = 'video-row editor-toolbar';
@@ -527,6 +567,7 @@
     $('.save-only').addEventListener('click', () => savePost({ publish: false }));
     $('.add-photo').addEventListener('click', () => pickFiles('image/*', true));
     $('.add-video').addEventListener('click', videoRow);
+    $('.add-link').addEventListener('click', linkRow);
 
     $('.preview-toggle').addEventListener('click', () => {
       el.preview.hidden = !el.preview.hidden;

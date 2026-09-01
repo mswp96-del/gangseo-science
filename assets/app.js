@@ -187,14 +187,17 @@ async function loadPosts() {
     if (!r.ok) throw new Error(`posts/index.json (${r.status})`);
     return r.json();
   });
+  // 목록에 적힌 글 하나가 없어졌더라도(지운 직후 등) 나머지 글은 그대로 보이게 합니다.
   const posts = await Promise.all(files.map(async (file) => {
-    const raw = await fetchFresh(POSTS_DIR + file).then((r) => {
-      if (!r.ok) throw new Error(`${file} (${r.status})`);
-      return r.text();
-    });
-    return parsePost(raw, file);
+    try {
+      const res = await fetchFresh(POSTS_DIR + file);
+      if (!res.ok) return null;
+      return parsePost(await res.text(), file);
+    } catch (err) {
+      return null;
+    }
   }));
-  return posts.sort((a, b) => (b.date || '').localeCompare(a.date || ''));
+  return posts.filter(Boolean).sort((a, b) => (b.date || '').localeCompare(a.date || ''));
 }
 
 function formatDate(value) {

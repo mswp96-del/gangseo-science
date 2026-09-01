@@ -62,11 +62,34 @@ function Update-CacheStamp {
 
 # git 을 부르고 화면 출력을 글자로 받아 옵니다.
 # ($ErrorActionPreference 를 낮춰야 git 이 stderr 에 적는 안내문이 빨간 오류로 튀지 않습니다)
+# PATH 에 git 이 없어도 흔히 설치되는 위치에서 찾아 씁니다.
+function Find-Git {
+  $cmd = Get-Command git -ErrorAction SilentlyContinue
+  if ($cmd) { return $cmd.Source }
+  $candidates = @(
+    "$env:ProgramFiles\Git\cmd\git.exe",
+    "${env:ProgramFiles(x86)}\Git\cmd\git.exe",
+    "$env:LOCALAPPDATA\Programs\Git\cmd\git.exe",
+    "$env:LOCALAPPDATA\GitHubDesktop\app-*\resources\app\git\cmd\git.exe",
+    "$env:ProgramFiles\GitHub CLI\git.exe"
+  )
+  foreach ($c in $candidates) {
+    $hit = Get-Item $c -ErrorAction SilentlyContinue | Select-Object -First 1
+    if ($hit) { return $hit.FullName }
+  }
+  return $null
+}
+$script:GitExe = Find-Git
+
 function Invoke-Git {
+  if (-not $script:GitExe) {
+    $script:GitExit = 127
+    return 'git 이 설치되어 있지 않습니다. PowerShell 에서  winget install --id Git.Git -e  를 실행해 설치한 뒤 글쓰기.bat 을 다시 여세요.'
+  }
   $old = $ErrorActionPreference
   $ErrorActionPreference = 'SilentlyContinue'
   try {
-    $out = & git @args 2>&1 | ForEach-Object { $_.ToString() }
+    $out = & $script:GitExe @args 2>&1 | ForEach-Object { $_.ToString() }
     $script:GitExit = $LASTEXITCODE
     return ($out -join [Environment]::NewLine)
   } finally {
@@ -88,11 +111,19 @@ function Initialize-GitConfig {
 function Invoke-Publish {
   Push-Location $root
   try {
+    Initialize-GitConfig
+    $log = New-Object Text.StringBuilder
+
+    # 휴대폰(인터넷 모드)에서 올린 글이 GitHub 에 먼저 있을 수 있으므로 먼저 받아 옵니다.
+    [void]$log.AppendLine((Invoke-Git pull --rebase --autostash))
+    if ($script:GitExit -ne 0) {
+      Invoke-Git rebase --abort | Out-Null
+      return @{ ok = $false; error = "GitHub 의 최신 글을 받아 오지 못했습니다 — 인터넷 연결을 확인해 주세요.`n$($log.ToString())" }
+    }
+
     & $updateIndex | Out-Null
     Update-CacheStamp
-    Initialize-GitConfig
 
-    $log = New-Object Text.StringBuilder
     [void]$log.AppendLine((Invoke-Git add -A))
 
     Invoke-Git diff --cached --quiet | Out-Null
