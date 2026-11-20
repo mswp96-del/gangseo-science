@@ -6,3 +6,5 @@ tags:
 summary: 
 ---
 https://www.youtube.com/watch?v=dB9jVFxxV60
+
+https://www.youtube.com/watch?v=u8Pf_Sd8HdU
